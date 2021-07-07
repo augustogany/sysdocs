@@ -40,6 +40,9 @@
                                     <td><h6 class="text-left">{{$document->name}}</h6></td>
                                     <td><h6 class="text-center">{{$document->category}}</h6></td>
                                     <td class="text-center">
+                                        <button wire:click="getDetails({{$document->id}})" class="btn btn-dark mtmobile">
+                                                <i class="fas fa-list"></i>
+                                        </button>
                                         @can('view',$document)
                                         <a href="javascript:void(0)" 
                                         wire:click="Edit({{$document->id}})"
@@ -72,6 +75,7 @@
         </div>
     </div>
     @include('livewire.documents.form')
+    @include('livewire.documents.document-details')
 </div>
 @push('script')
 <script src="{{ asset('js/select2.min.js') }}"></script>
@@ -88,14 +92,16 @@
         });
 
         window.livewire.on('document-deleted', msg => {
-            //noty
+            noty(msg)
         });
 
         window.livewire.on('show-modal', msg => {
-            
-            $('#theModal').modal('show')
-           
+            $('#theModal').modal('show') 
         });
+
+        window.livewire.on('detail-show-modal', Msg =>{
+            $('#modalDetails').modal('show')
+        })
 
         window.livewire.on('modal-hide', msg => {
             $('#theModal').modal('hide')
@@ -111,9 +117,6 @@
         $('#selectcategories').select2();
     });
    
-    function active() {
-        $('#theModal').modal('show')
-    }
     function Confirm(id)
     {
         let me = this

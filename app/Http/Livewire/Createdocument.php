@@ -84,5 +84,5 @@ class Createdocument extends Component
         $this->archive = null;
         $this->categoryid = '';
         $this->selected_id = 0;
-    }
+    }    
 }

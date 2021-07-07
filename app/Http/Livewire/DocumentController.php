@@ -15,7 +15,8 @@ class DocumentController extends Component
 {
     use WithFileUploads,WithPagination;
 
-    public $name, $categoryid, $search, $archive, $years,$anios=[], $selected_id, $pageTitle, $componentName;
+    public $name, $categoryid, $search, $archive, $years,$anios=[], $selected_id, $pageTitle, $componentName,
+           $details,$countDetails;
     
     private $pagination = 5;
     
@@ -24,6 +25,7 @@ class DocumentController extends Component
     public function mount(){
         $this->pageTitle = 'Listado';
         $this->componentName = 'Documentos';
+        $this->details = [];
         $this->categoryid = 'Elegir';
         $this->years = Year::all();
     }
@@ -162,5 +164,13 @@ class DocumentController extends Component
 
         $this->resetUI();
         $this->emit('document-deleted','Documento Eliminado');
+    }
+
+    public function getDetails(Document $document){
+       
+        $this->details = $document->archives;
+        $this->countDetails = $this->details->count();
+        $this->selected_id = $document->id;
+        $this->emit('detail-show-modal','Details loaded');
     }
 }
