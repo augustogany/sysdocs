@@ -5,9 +5,8 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Barryvdh\DomPDF\Facade as PDF;
 use Carbon\Carbon;
-use App\Models\Sale;
+use App\Models\Document;
 use App\Models\User;
-use App\Models\SaleDetail;
 use Maatwebsite\Excel\Facades\Excel;
 
 class ExportController extends Controller
@@ -22,16 +21,20 @@ class ExportController extends Controller
             $to = Carbon::parse($dateTo)->format('Y-m-d') . ' 23:59:59';
         }
         if ($userId == 0) {
-            $data = Sale::join('users as u','u.id','sales.user_id')
-                                ->select('sales.*','u.name as user')
-                                ->whereBetween('sales.created_at', [$from,$to])
-                                ->get();
+            $data = Document::with('archives')
+                            ->join('users as u','u.id','documents.user_id')
+                            ->join('categories as c','c.id','documents.category_id')
+                            ->select('documents.*','u.name as user','c.name as categoria')
+                            ->whereBetween('documents.created_at', [$from,$to])
+                            ->get();
         } else {
-            $data = Sale::join('users as u','u.id','sales.user_id')
-                                ->select('sales.*','u.name as user')
-                                ->whereBetween('sales.created_at',[$from,$to])
-                                ->where('user_id', $this->userId)
-                                ->get();
+            $data = Document::with('archives')
+                            ->join('users as u','u.id','documents.user_id')
+                            ->join('categories as c','c.id','documents.category_id')
+                            ->select('documents.*','u.name as user','c.name as categoria')
+                            ->whereBetween('documents.created_at',[$from,$to])
+                            ->where('user_id', $userId)
+                            ->get();
         }
 
         $user = $userId == 0 ? 'Todos' : User::find($userId)->name;
